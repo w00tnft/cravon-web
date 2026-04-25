@@ -250,19 +250,39 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 <!-- HOLDINGS -->
 <div class="card" style="margin-bottom:16px">
-  <div class="card-title">Today's Menu — Holdings</div>
-  <table class="h-table">
-    <thead><tr>
-      <th>TOKEN</th>
-      <th style="text-align:right">ENTRY PRICE</th>
-      <th style="text-align:right">CURRENT</th>
-      <th style="text-align:right">P&L</th>
-      <th style="text-align:right">24H</th>
-    </tr></thead>
-    <tbody id="h-body">
-      <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);font-size:12px">Fetching live prices...</td></tr>
-    </tbody>
-  </table>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+    <div class="card-title" style="margin-bottom:0">Today's Menu — Holdings</div>
+    <div style="background:#EDFAF4;border:1.5px solid #A8D8C8;border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:#3B8A68;font-family:var(--mono)">⏳ AWAITING MILESTONE</div>
+  </div>
+
+  <!-- USDT cash position -->
+  <div style="background:#F5F3F0;border:1.5px solid #E0DBD4;border-radius:12px;padding:16px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:10px;background:#E8F5E0;display:flex;align-items:center;justify-content:center;font-size:18px">💵</div>
+      <div>
+        <div style="font-size:15px;font-weight:700">USDT Cash</div>
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">100% — Waiting for entry</div>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:18px;font-weight:700;font-family:var(--mono)">$10,000.00</div>
+      <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">+0.00% P&L</div>
+    </div>
+  </div>
+
+  <!-- Milestone progress -->
+  <div style="background:#FFF3EC;border:1.5px solid #F0C4A8;border-radius:12px;padding:16px 18px">
+    <div style="font-size:12px;font-weight:700;margin-bottom:10px">🎯 Portfolio Activation Milestone</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Chef CRAV will begin spot trading once <strong style="color:var(--text)">@CravonLab reaches 300 subscribers</strong>. Portfolio will be deployed across AI tokens with full transparency.</div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);margin-bottom:6px">
+      <span>Progress</span>
+      <span id="milestone-count">0 / 300 subscribers</span>
+    </div>
+    <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
+      <div id="milestone-bar" style="height:100%;background:#F09478;border-radius:4px;width:0%;transition:width 1s ease"></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Planned tokens: FET · TAO · NEAR · RENDER · INJ · GRT</div>
+  </div>
 </div>
 
 <!-- FEAR & GREED with Chef CRAV -->
@@ -365,7 +385,7 @@ const H=[
   {token:'WLD',    entry:0.2623, amount:1144.87, alloc:15, color:'#78B0E8', bg:'#EDF4FF', logo:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg'},
   {token:'GRT',    entry:0.0247, amount:20242.91,alloc:10, color:'#B8B0A8', bg:'#F5F3F0', logo:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png'},
 ];
-const OKX_MAP={FET:'FET-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',WLD:'WLD-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT'};
+const OKX_MAP={FET:'FET-USDT',TAO:'TAO-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT'};
 const START=10000, START_DATE=new Date('2026-04-25'), BTC_ENTRY=93500;
 
 const fp=p=>!p?'$0':p>=100?`$${p.toFixed(2)}`:p>=1?`$${p.toFixed(3)}`:`$${p.toFixed(4)}`;
@@ -422,16 +442,22 @@ async function update() {
   const prices=Object.fromEntries(entries.filter(([,v])=>v));
   const sentiment=await getFG();
 
-  // Portfolio calc
-  let total=0;
-  H.forEach(h=>{const p=prices[h.token]; total+=(p?p.price:h.entry)*h.amount;});
-  const ret=((total-START)/START)*100;
-  const pnl=total-START;
+  // Portfolio is in USDT cash — no active positions
+  const total = PORTFOLIO_VALUE;
+  const ret = 0; // No return yet — in USDT
+  const pnl = 0;
   const days=Math.max(1,Math.floor((Date.now()-START_DATE)/86400000));
   const btcNow=prices['BTC']?.price||BTC_ENTRY;
   const btcRet=((btcNow-BTC_ENTRY)/BTC_ENTRY)*100;
   const spyRet=0;
   const vb=ret-btcRet, vs=ret-spyRet;
+
+  // Update milestone bar
+  const pct_done = Math.min(100, (MILESTONE_CURRENT/MILESTONE_TARGET)*100);
+  const mbar = document.getElementById('milestone-bar');
+  const mcount = document.getElementById('milestone-count');
+  if(mbar) mbar.style.width = pct_done.toFixed(0)+'%';
+  if(mcount) mcount.textContent = MILESTONE_CURRENT+' / '+MILESTONE_TARGET+' subscribers';
 
   // Header
   document.getElementById('date-txt').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
@@ -453,14 +479,15 @@ async function update() {
   spyEl.className='metric-val '+(vs>=0?'up':'down');
 
   // Legend
-  document.getElementById('legend').innerHTML=H.map(h=>{
-    const p=prices[h.token]; const chg=p?p.change:0;
-    return `<div class="leg-row">
-      <img src="${h.logo}" style="width:16px;height:16px;border-radius:4px;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">
-      <span class="leg-name">${h.token} <span class="leg-pct">${h.alloc}%</span></span>
-      <span class="leg-chg ${chg>=0?'up':'down'}">${pc(chg)}</span>
+  document.getElementById('legend').innerHTML = `
+    <div class="leg-row">
+      <div style="width:16px;height:16px;border-radius:4px;background:#A8D8C8;flex-shrink:0"></div>
+      <span class="leg-name">USDT <span class="leg-pct">100%</span></span>
+      <span class="leg-chg up">stable</span>
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:8px;line-height:1.5">
+      Awaiting 300 subscriber milestone to deploy portfolio
     </div>`;
-  }).join('');
 
   // Perf bars
   const BARS=[
