@@ -385,7 +385,17 @@ const H=[
   {token:'WLD',    entry:0.2623, amount:1144.87, alloc:15, color:'#78B0E8', bg:'#EDF4FF', logo:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg'},
   {token:'GRT',    entry:0.0247, amount:20242.91,alloc:10, color:'#B8B0A8', bg:'#F5F3F0', logo:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png'},
 ];
-const OKX_MAP={FET:'FET-USDT',TAO:'TAO-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT'};
+const OKX_MAP={FET:'FET-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT'};
+const COINGECKO_MAP={'TAO':'bittensor'};
+
+async function getCoinGeckoPrice(geckoId) {
+  try {
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${geckoId}&vs_currencies=usd&include_24hr_change=true`);
+    const j=await r.json(); const d=j[geckoId];
+    if(!d) return null;
+    return {price:d.usd, change:d.usd_24h_change||0};
+  } catch { return null; }
+}
 const START=10000, START_DATE=new Date('2026-04-25'), BTC_ENTRY=93500;
 
 const fp=p=>!p?'$0':p>=100?`$${p.toFixed(2)}`:p>=1?`$${p.toFixed(3)}`:`$${p.toFixed(4)}`;
@@ -438,7 +448,10 @@ function fgColor(val) {
 
 async function update() {
   initPie();
-  const entries=await Promise.all(Object.entries(OKX_MAP).map(async([t,s])=>[t,await getOKX(s)]));
+  // Fetch OKX prices + CoinGecko fallback for TAO
+  const okxEntries=await Promise.all(Object.entries(OKX_MAP).map(async([t,s])=>[t,await getOKX(s)]));
+  const geckoEntries=await Promise.all(Object.entries(COINGECKO_MAP).map(async([t,id])=>[t,await getCoinGeckoPrice(id)]));
+  const entries=[...okxEntries,...geckoEntries];
   const prices=Object.fromEntries(entries.filter(([,v])=>v));
   const sentiment=await getFG();
 
