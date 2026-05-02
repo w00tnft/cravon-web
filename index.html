@@ -230,8 +230,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
       <div class="pie-wrap">
         <canvas id="pieChart" width="150" height="150"></canvas>
         <div class="pie-center">
-          <div class="pie-num">6</div>
-          <div class="pie-lbl">TOKENS</div>
+          <div class="pie-num" style="font-size:14px">USDT</div>
+          <div class="pie-lbl">100%</div>
         </div>
       </div>
       <div class="legend" id="legend">Loading...</div>
@@ -397,6 +397,7 @@ async function getCoinGeckoPrice(geckoId) {
   } catch { return null; }
 }
 const START=10000, START_DATE=new Date('2026-04-25'), BTC_ENTRY=93500;
+const PORTFOLIO_VALUE=10000, MILESTONE_CURRENT=0, MILESTONE_TARGET=300;
 
 const fp=p=>!p?'$0':p>=100?`$${p.toFixed(2)}`:p>=1?`$${p.toFixed(3)}`:`$${p.toFixed(4)}`;
 const pc=v=>(v>=0?'+':'')+v.toFixed(2)+'%';
@@ -437,7 +438,7 @@ function initPie() {
   if(pieInited) return; pieInited=true;
   new Chart(document.getElementById('pieChart'), {
     type:'doughnut',
-    data:{labels:H.map(h=>h.token), datasets:[{data:H.map(h=>h.alloc), backgroundColor:H.map(h=>h.color), borderWidth:0, hoverOffset:6}]},
+    data:{labels:['USDT'], datasets:[{data:[100], backgroundColor:['#A8D8C8'], borderWidth:0, hoverOffset:6}]},
     options:{responsive:false, cutout:'65%', plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.label}: ${c.parsed}%`}}}}
   });
 }
@@ -530,29 +531,6 @@ async function update() {
   const vsEl=document.getElementById('vs-spy2');
   vsEl.textContent=pc(vs); vsEl.className='vs-num '+(vs>=0?'up':'down');
 
-  // Holdings table
-  document.getElementById('h-body').innerHTML=H.map(h=>{
-    const p=prices[h.token]; const cur=p?p.price:h.entry;
-    const pnlP=((cur-h.entry)/h.entry)*100;
-    const pnlU=(cur-h.entry)*h.amount;
-    const chg=p?p.change:0;
-    return `<tr>
-      <td><div class="tok-cell">
-        <div class="tok-badge" style="background:${h.bg};overflow:hidden;padding:0;">
-          <img src="${h.logo}" style="width:34px;height:34px;object-fit:cover;border-radius:10px;" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
-          <span style="display:none;width:34px;height:34px;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);color:${h.color}">${h.token.substring(0,3)}</span>
-        </div>
-        <div><div class="tok-name">${h.token}</div><div class="tok-entry">entry ${fp(h.entry)}</div></div>
-      </div></td>
-      <td class="td-r"><div class="p-now dim">${fp(h.entry)}</div></td>
-      <td class="td-r"><div class="p-now">${fp(cur)}</div></td>
-      <td class="td-r">
-        <div class="p-pnl ${pnlP>=0?'up':'down'}">${pc(pnlP)}</div>
-        <div class="p-usd">${pnlP>=0?'+':''}${us(pnlU)}</div>
-      </td>
-      <td class="td-r"><div class="p-pnl ${chg>=0?'up':'down'}">${pc(chg)}</div></td>
-    </tr>`;
-  }).join('');
 
   // Fear & Greed
   const fc=fgColor(sentiment.val);
