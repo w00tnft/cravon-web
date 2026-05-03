@@ -281,7 +281,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
       <div id="milestone-bar" style="height:100%;background:#F09478;border-radius:4px;width:0%;transition:width 1s ease"></div>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Planned tokens: FET · TAO · NEAR · RENDER · INJ · GRT</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Planned tokens: FET · TAO · NEAR · RENDER · INJ · GRT · KITE · KAITO · VIRTUAL · TBA</div>
   </div>
 </div>
 
@@ -378,14 +378,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 
 <script>
 const H=[
-  {token:'FET',    entry:0.2088, amount:4784.69, alloc:20, color:'#A89AE0', bg:'#F0EDFF', logo:'https://assets.coingecko.com/coins/images/5681/small/Fetch.jpg'},
-  {token:'NEAR',   entry:1.416,  amount:282.49,  alloc:20, color:'#7ECFB0', bg:'#EDFAF4', logo:'https://assets.coingecko.com/coins/images/10365/small/near.jpg'},
-  {token:'RENDER', entry:1.800,  amount:222.22,  alloc:20, color:'#F09478', bg:'#FFF3EC', logo:'https://assets.coingecko.com/coins/images/11636/small/rndr.png'},
-  {token:'INJ',    entry:3.425,  amount:116.79,  alloc:15, color:'#E8C878', bg:'#FFFAEC', logo:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png'},
-  {token:'WLD',    entry:0.2623, amount:1144.87, alloc:15, color:'#78B0E8', bg:'#EDF4FF', logo:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg'},
-  {token:'GRT',    entry:0.0247, amount:20242.91,alloc:10, color:'#B8B0A8', bg:'#F5F3F0', logo:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png'},
+  {token:'FET',     entry:0.2088, amount:4784.69, alloc:20, color:'#A89AE0', bg:'#F0EDFF', logo:'https://assets.coingecko.com/coins/images/5681/small/Fetch.jpg'},
+  {token:'NEAR',    entry:1.416,  amount:282.49,  alloc:20, color:'#7ECFB0', bg:'#EDFAF4', logo:'https://assets.coingecko.com/coins/images/10365/small/near.jpg'},
+  {token:'RENDER',  entry:1.800,  amount:222.22,  alloc:20, color:'#F09478', bg:'#FFF3EC', logo:'https://assets.coingecko.com/coins/images/11636/small/rndr.png'},
+  {token:'INJ',     entry:3.425,  amount:116.79,  alloc:15, color:'#E8C878', bg:'#FFFAEC', logo:'https://assets.coingecko.com/coins/images/12882/small/Secondary_Symbol.png'},
+  {token:'WLD',     entry:0.2623, amount:1144.87, alloc:15, color:'#78B0E8', bg:'#EDF4FF', logo:'https://assets.coingecko.com/coins/images/31069/small/worldcoin.jpeg'},
+  {token:'GRT',     entry:0.0247, amount:20242.91,alloc:10, color:'#B8B0A8', bg:'#F5F3F0', logo:'https://assets.coingecko.com/coins/images/13397/small/Graph_Token.png'},
+  {token:'KITE',    entry:0,      amount:0,       alloc:0,  color:'#F0A8C8', bg:'#FFF0F6', logo:'https://assets.coingecko.com/coins/images/54504/small/kite.png'},
+  {token:'KAITO',   entry:0,      amount:0,       alloc:0,  color:'#A8B8F0', bg:'#EEF0FF', logo:'https://assets.coingecko.com/coins/images/36605/small/kaito.png'},
+  {token:'VIRTUAL', entry:0,      amount:0,       alloc:0,  color:'#A8E8D8', bg:'#EDFAF6', logo:'https://assets.coingecko.com/coins/images/34820/small/virtual.jpeg'},
 ];
-const OKX_MAP={FET:'FET-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT'};
+const OKX_MAP={FET:'FET-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT',KITE:'KITE-USDT',KAITO:'KAITO-USDT',VIRTUAL:'VIRTUAL-USDT'};
 const COINGECKO_MAP={'TAO':'bittensor'};
 
 async function getCoinGeckoPrice(geckoId) {
