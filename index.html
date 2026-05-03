@@ -281,7 +281,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
     <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden">
       <div id="milestone-bar" style="height:100%;background:#F09478;border-radius:4px;width:0%;transition:width 1s ease"></div>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono)">Planned tokens: FET · TAO · NEAR · RENDER · INJ · GRT · KITE · KAITO · VIRTUAL · TBA</div>
+    <div style="font-size:10px;color:var(--muted);margin-top:14px;font-family:var(--mono);letter-spacing:1px;margin-bottom:8px">PLANNED TOKENS (9 + 1 TBA)</div>
+    <div id="planned-grid" style="display:flex;flex-wrap:wrap;gap:7px"></div>
   </div>
 </div>
 
@@ -387,6 +388,7 @@ const H=[
   {token:'KITE',    entry:0,      amount:0,       alloc:0,  color:'#F0A8C8', bg:'#FFF0F6', logo:'https://assets.coingecko.com/coins/images/54504/small/kite.png'},
   {token:'KAITO',   entry:0,      amount:0,       alloc:0,  color:'#A8B8F0', bg:'#EEF0FF', logo:'https://assets.coingecko.com/coins/images/36605/small/kaito.png'},
   {token:'VIRTUAL', entry:0,      amount:0,       alloc:0,  color:'#A8E8D8', bg:'#EDFAF6', logo:'https://assets.coingecko.com/coins/images/34820/small/virtual.jpeg'},
+  {token:'TAO',     entry:0,      amount:0,       alloc:0,  color:'#C8A8E8', bg:'#F5EEFF', logo:'https://assets.coingecko.com/coins/images/28452/small/ARUsPeNQ_400x400.jpg'},
 ];
 const OKX_MAP={FET:'FET-USDT',NEAR:'NEAR-USDT',RENDER:'RENDER-USDT',INJ:'INJ-USDT',GRT:'GRT-USDT',BTC:'BTC-USDT',KITE:'KITE-USDT',KAITO:'KAITO-USDT',VIRTUAL:'VIRTUAL-USDT'};
 const COINGECKO_MAP={'TAO':'bittensor'};
@@ -505,6 +507,24 @@ async function update() {
     <div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:8px;line-height:1.5">
       Awaiting 300 subscriber milestone to deploy portfolio
     </div>`;
+
+  // Planned tokens grid
+  document.getElementById('planned-grid').innerHTML=H.map(t=>{
+    const p=prices[t.token];
+    const priceStr=p?fp(p.price):'—';
+    const chg=p?p.change:0;
+    const chgStr=p?pc(chg):'';
+    return `<div style="display:flex;align-items:center;gap:7px;background:${t.bg};border:1.5px solid ${t.color}80;border-radius:10px;padding:6px 10px;">
+      <div style="width:26px;height:26px;border-radius:7px;overflow:hidden;flex-shrink:0;background:${t.bg};display:flex;align-items:center;justify-content:center;">
+        <img src="${t.logo}" style="width:26px;height:26px;object-fit:cover;border-radius:7px" onerror="this.style.display='none';this.nextSibling.style.display='flex'">
+        <span style="display:none;font-size:9px;font-weight:700;font-family:var(--mono);color:${t.color}">${t.token.substring(0,3)}</span>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;font-family:var(--mono);color:var(--text)">${t.token}</div>
+        <div style="font-size:10px;font-family:var(--mono);color:${chg>=0?'var(--green)':'var(--red)'}">${priceStr}${chgStr?' <span style="opacity:0.7">'+chgStr+'</span>':''}</div>
+      </div>
+    </div>`;
+  }).join('');
 
   // Perf bars
   const BARS=[
